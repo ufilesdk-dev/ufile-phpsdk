@@ -13,3 +13,6 @@
 ===Version 1.0.5===
 2015.10.19
  * fix digest bug
+=== Version 1.0.6 ===
+ *  新增append 接口
+ *  上传key 去掉转义，保留原有格式
