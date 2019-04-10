@@ -125,10 +125,16 @@ function UCloud_Client_Do($req)
         CURLOPT_HEADER => true,
         CURLOPT_NOBODY => false,
         CURLOPT_CUSTOMREQUEST  => $req->METHOD,
-        CURLOPT_URL => $url['host'] . "/" . rawurlencode($url['path']) . "?" . $req->EncodedQuery(),
+        //CURLOPT_URL => $url['host'] . "/" . rawurlencode($url['path']) . "?" . $req->EncodedQuery(),
         CURLOPT_TIMEOUT => $req->Timeout,
         CURLOPT_CONNECTTIMEOUT => $req->Timeout
     );
+
+    if($req->EncodedQuery() !== ""){
+        $options[CURLOPT_URL] = $url['host'] . "/" . $url['path'] . "?" . $req->EncodedQuery();
+    }else{
+        $options[CURLOPT_URL] = $url['host'] . "/" . $url['path'];
+    }
 
     $httpHeader = $req->Header;
     if (!empty($httpHeader))

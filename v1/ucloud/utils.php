@@ -16,6 +16,7 @@ abstract class ActionType
     const DELETE    = 6;
     const UPLOADHIT = 7;
     const GETFILE   = 8;
+    const APPENDFILE = 9;
 }
 
 class UCloud_Error

@@ -272,6 +272,39 @@ function UCloud_Delete($bucket, $key)
     return UCloud_Client_Call($client, $req);
 }
 
+//------------------------------追加上传------------------------------
+function UCloud_AppendFile($bucket, $key, $file, $position)
+{
+    $action_type = ActionType::APPENDFILE;
+    $err = CheckConfig(ActionType::APPENDFILE);
+    if ($err != null) {
+        return array(null, $err);
+    }
+
+    $f = @fopen($file, "r");
+    if (!$f) return array(null, new UCloud_Error(-1, -1, "open $file error"));
+
+    global $UCLOUD_PROXY_SUFFIX;
+    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $key = $key . "?append&position=" . $position;
+    $path = $key;
+    $content  = @fread($f, filesize($file));
+    list($mimetype, $err) = GetFileMimeType($file);
+    if ($err) {
+        fclose($f);
+        return array("", $err);
+    }
+    $req = new HTTP_Request('PUT', array('host'=>$host, 'path'=>$path), $content, $bucket, $key, $action_type);
+    $req->Header['Expect'] = '';
+    $req->Header['Content-Type'] = $mimetype;
+
+    $client = new UCloud_AuthHttpClient(null, $mimetype);
+    list($data, $err) = UCloud_Client_Call($client, $req);
+    fclose($f);
+    return array($data, $err);
+}
+
+
 //------------------------------生成公有文件Url------------------------------
 // @results: $url
 function UCloud_MakePublicUrl($bucket, $key)
