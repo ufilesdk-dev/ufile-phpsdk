@@ -337,6 +337,7 @@ $mimetype_complete_map = array(
     ".svf" => "image/vnd.dwg",
     ".svr" => "application/x-world",
     ".swf" => "application/x-shockwave-flash",
+    ".svg" => "image/svg+xml",
     ".t" => "application/x-troff",
     ".talk" => "text/x-speech",
     ".tar" => "application/x-tar",
