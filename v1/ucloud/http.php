@@ -253,7 +253,11 @@ function UCloud_Client_Ret($resp)
     }
 
     $etag = UCloud_Header_Get($resp->Header, 'ETag');
-    if ($etag != '') $data['ETag'] = $etag;
+    if ($etag != ''){
+         $data['ETag'] = $etag;
+    }else{
+         $data['ETag'] = UCloud_Header_Get($resp->Header, 'Etag');
+    }    
     if (floor($code/100) == 2) {
         return array($data, null);
     }
