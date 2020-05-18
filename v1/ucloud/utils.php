@@ -17,6 +17,7 @@ abstract class ActionType
     const UPLOADHIT = 7;
     const GETFILE   = 8;
     const APPENDFILE = 9;
+    const LISTOBJECTS = 10;
 }
 
 class UCloud_Error
@@ -125,6 +126,7 @@ function CheckConfig($action) {
         case ActionType::MFINISH:
         case ActionType::DELETE:
         case ActionType::UPLOADHIT:
+        case ActionType::LISTOBJECTS:
             if ($UCLOUD_PROXY_SUFFIX == "") {
                     return new UCloud_Error(400, -1, "no proxy suffix found in config");
             } else if ($UCLOUD_PUBLIC_KEY == "" || strstr($UCLOUD_PUBLIC_KEY, " ") != FALSE) {

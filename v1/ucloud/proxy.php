@@ -304,6 +304,26 @@ function UCloud_AppendFile($bucket, $key, $file, $position)
     return array($data, $err);
 }
 
+//------------------------------列表目录------------------------------
+function UCloud_ListObjects($bucket, $path_prefix, $marker, $count, $delimiter)
+{
+    $action_type = ActionType::LISTOBJECTS;
+    $err = CheckConfig(ActionType::LISTOBJECTS);
+    if ($err != null) {
+        return array(null, $err);
+    }
+
+    global $UCLOUD_PROXY_SUFFIX;
+    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $path = "?listobjects&prefix=" . $path_prefix ."&marker=". $marker . "&max-keys=" . $count ."&delimiter=" .$delimiter;
+
+    $req = new HTTP_Request('GET', array('host'=>$host, 'path'=>$path), null, $bucket, null, $action_type);
+    $req->Header['Content-Type'] = 'application/x-www-form-urlencoded';
+
+    $client = new UCloud_AuthHttpClient(null);
+    list($data, $err) = UCloud_Client_Call($client, $req);
+    return array($data, $err);
+}
 
 //------------------------------生成公有文件Url------------------------------
 // @results: $url
