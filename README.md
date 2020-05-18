@@ -12,4 +12,5 @@ Demo 目录中，包含各个接口的使用例子：
 -    multipart.php
 -    mupload.php
 -    put.php
+-    listobjects.php
 -    uploadhit.php
