@@ -272,6 +272,27 @@ function UCloud_Delete($bucket, $key)
     return UCloud_Client_Call($client, $req);
 }
 
+//------------------------------Head文件------------------------------
+function UCloud_Head($bucket, $key)
+{
+
+    $err = CheckConfig(ActionType::HEAD);
+    if ($err != null) {
+        return array(null, $err);
+    }
+
+    global $UCLOUD_PROXY_SUFFIX;
+    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $path = "$key";
+
+    $req = new HTTP_Request('HEAD', array('host'=>$host, 'path'=>$path), null, $bucket, $key);
+    $req->Header['Content-Type'] = 'application/x-www-form-urlencoded';
+
+    $client = new UCloud_AuthHttpClient(null);
+    return UCloud_Client_Call_ReHeader($client, $req);
+}
+
+
 //------------------------------追加上传------------------------------
 function UCloud_AppendFile($bucket, $key, $file, $position)
 {

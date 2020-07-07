@@ -4,8 +4,8 @@ require_once("conf.php");
 require_once("utils.php");
 require_once("digest.php");
 
+$CURL_TIMEOUT=30;
 // --------------------------------------------------------------------------------
-
 class HTTP_Request
 {
     public $URL;
@@ -129,12 +129,15 @@ function UCloud_Client_Do($req)
         CURLOPT_TIMEOUT => $req->Timeout,
         CURLOPT_CONNECTTIMEOUT => $req->Timeout
     );
-
-    if($req->EncodedQuery() !== ""){
+    if($req->METHOD =="HEAD"){
+	$options[CURLOPT_NOBODY]=true;
+    }
+     if($req->EncodedQuery() !== ""){
         $options[CURLOPT_URL] = $url['host'] . "/" . $url['path'] . "?" . $req->EncodedQuery();
     }else{
         $options[CURLOPT_URL] = $url['host'] . "/" . $url['path'];
     }
+
 
     $httpHeader = $req->Header;
     if (!empty($httpHeader))
@@ -151,7 +154,9 @@ function UCloud_Client_Do($req)
     } else {
         $options[CURLOPT_POSTFIELDS] = "";
     }
+
     curl_setopt_array($ch, $options);
+
     $result = curl_exec($ch);
     $ret = curl_errno($ch);
     if ($ret !== 0) {
@@ -159,6 +164,7 @@ function UCloud_Client_Do($req)
         curl_close($ch);
         return array(null, $err);
     }
+
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
     curl_close($ch);
@@ -258,6 +264,7 @@ function UCloud_Client_Ret($resp)
     }else{
          $data['ETag'] = UCloud_Header_Get($resp->Header, 'Etag');
     }    
+
     if (floor($code/100) == 2) {
         return array($data, null);
     }
@@ -272,6 +279,33 @@ function UCloud_Client_Call($self, $req, $type = HEAD_FIELD_CHECK)
         return array(null, $err);
     }
     return UCloud_Client_Ret($resp);
+}
+
+//@results: ($header,$data, $error)
+function UCloud_Client_Call_ReHeader($self, $req, $type = HEAD_FIELD_CHECK)
+{
+    list($resp, $err) = $self->RoundTrip($req, $type);
+    if ($err !== null) {
+        return array(null, null, $err);
+    }
+
+    $code = $resp->StatusCode;
+    $data = null;
+    if ($code >= 200 && $code <= 299) {
+        if ($resp->ContentLength !== 0 && UCloud_Header_Get($resp->Header, 'Content-Type') == 'application/json') {
+            $data = json_decode($resp->Body, true);
+            if ($data === null) {
+                $err = new UCloud_Error($code, 0, "");
+                return array($resp->Header, null, $err);
+            }
+        }
+    }
+
+    if (floor($code/100) == 2) {
+        return array($resp->Header, $data, null);
+    }
+ 
+    return array($resp->Header, $data, UCloud_ResponseError($resp));
 }
 
 //@results: $error
