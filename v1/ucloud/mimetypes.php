@@ -260,6 +260,7 @@ $mimetype_complete_map = array(
     ".ppm" => "image/x-portable-pixmap",
     ".pps" => "application/mspowerpoint",
     ".ppt" => "application/mspowerpoint",
+    ".pptx" => "application/mspowerpoint",
     ".ppz" => "application/mspowerpoint",
     ".pre" => "application/x-freelance",
     ".prt" => "application/pro_eng",
