@@ -1,4 +1,4 @@
-<?php
+﻿<?php
     
 global $mimetype_complete_map;
 $mimetype_complete_map = array(
