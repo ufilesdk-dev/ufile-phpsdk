@@ -36,7 +36,7 @@ class HTTP_Request
         global $UFILE_ACTION_TYPE;
         if ($CURL_TIMEOUT == null && $action_type !== ActionType::PUTFILE 
             && $action_type !== ActionType::POSTFILE) {
-            $CURL_TIMEOUT = 10;
+            $CURL_TIMEOUT = 20;
         }
         $this->Timeout = $CURL_TIMEOUT;
     }
@@ -70,7 +70,7 @@ class HTTP_Response
 
         global $CURL_TIMEOUT;
         if ($CURL_TIMEOUT == null) {
-            $CURL_TIMEOUT = 10;
+            $CURL_TIMEOUT = 20;
         }
         $this->Timeout = $CURL_TIMEOUT;
     }
