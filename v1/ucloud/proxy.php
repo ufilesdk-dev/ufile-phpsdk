@@ -336,7 +336,9 @@ function UCloud_ListObjects($bucket, $path_prefix, $marker, $count, $delimiter)
 
     global $UCLOUD_PROXY_SUFFIX;
     $host = $bucket . $UCLOUD_PROXY_SUFFIX;
-    $path = "?listobjects&prefix=" . $path_prefix ."&marker=". $marker . "&max-keys=" . $count ."&delimiter=" .$delimiter;
+    $query = "listobjects&prefix=" . $path_prefix ."&marker=". $marker . "&max-keys=" . $count ."&delimiter=" .$delimiter;
+    parse_str($query,$arr);
+    $path = "?" . http_build_query($arr);
 
     $req = new HTTP_Request('GET', array('host'=>$host, 'path'=>$path), null, $bucket, null, $action_type);
     $req->Header['Content-Type'] = 'application/x-www-form-urlencoded';
