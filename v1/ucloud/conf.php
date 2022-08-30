@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 global $SDK_VER;
 global $UCLOUD_PROXY_SUFFIX;
