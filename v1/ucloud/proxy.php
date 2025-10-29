@@ -18,8 +18,7 @@ function UCloud_PutFile($bucket, $key, $file)
     $f = @fopen($file, "r");
     if (!$f) return array(null, new UCloud_Error(-1, -1, "open $file error"));
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $path = $key;
     $content  = @fread($f, filesize($file));
     list($mimetype, $err) = GetFileMimeType($file);
@@ -49,8 +48,7 @@ function UCloud_MultipartForm($bucket, $key, $file)
     $f = @fopen($file, "r");
     if (!$f) return array(null, new UCloud_Error(-1, -1, "open $file error"));
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $path = "";
     $fsize = filesize($file);
     $content = "";
@@ -89,8 +87,7 @@ function UCloud_MInit($bucket, $key)
         return array(null, $err);
     }
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $path = $key;
     $querys = array(
         "uploads" => ""
@@ -114,8 +111,6 @@ function UCloud_MUpload($bucket, $key, $file, $uploadId, $blkSize, $partNumber=0
     $f = @fopen($file, "r");
     if (!$f) return array(null, new UCloud_Error(-1, -1, "open $file error"));
 
-    global $UCLOUD_PROXY_SUFFIX;
-
     $etagList = array();
     list($mimetype, $err) = GetFileMimeType($file);
     if ($err) {
@@ -124,7 +119,7 @@ function UCloud_MUpload($bucket, $key, $file, $uploadId, $blkSize, $partNumber=0
     }
     $client   = new UCloud_AuthHttpClient(null);
     for(;;) {
-        $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+        $host = UCloud_GetHost($bucket);
         $path = $key;
         if (@fseek($f, $blkSize*$partNumber, SEEK_SET) < 0) {
             fclose($f);
@@ -170,8 +165,7 @@ function UCloud_MFinish($bucket, $key, $uploadId, $etagList, $newKey = '')
         return array(null, $err);
     }
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $path = $key;
     $querys = array(
         'uploadId' => $uploadId,
@@ -194,8 +188,7 @@ function UCloud_MCancel($bucket, $key, $uploadId)
         return array(null, $err);
     }
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $path = $key;
     $querys = array(
         'uploadId' => $uploadId
@@ -236,8 +229,7 @@ function UCloud_UploadHit($bucket, $key, $file)
     }
     fclose($f);
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $path = "uploadhit";
     $querys = array(
         'Hash' => $fileHash,
@@ -261,8 +253,7 @@ function UCloud_Delete($bucket, $key)
         return array(null, $err);
     }
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $path = "$key";
 
     $req = new HTTP_Request('DELETE', array('host'=>$host, 'path'=>$path), null, $bucket, $key);
@@ -281,8 +272,7 @@ function UCloud_Head($bucket, $key)
         return array(null, $err);
     }
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $path = "$key";
 
     $req = new HTTP_Request('HEAD', array('host'=>$host, 'path'=>$path), null, $bucket, $key);
@@ -305,8 +295,7 @@ function UCloud_AppendFile($bucket, $key, $file, $position)
     $f = @fopen($file, "r");
     if (!$f) return array(null, new UCloud_Error(-1, -1, "open $file error"));
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $key = $key . "?append&position=" . $position;
     $path = $key;
     $content  = @fread($f, filesize($file));
@@ -334,8 +323,7 @@ function UCloud_ListObjects($bucket, $path_prefix, $marker, $count, $delimiter)
         return array(null, $err);
     }
 
-    global $UCLOUD_PROXY_SUFFIX;
-    $host = $bucket . $UCLOUD_PROXY_SUFFIX;
+    $host = UCloud_GetHost($bucket);
     $query = "listobjects&prefix=" . $path_prefix ."&marker=". $marker . "&max-keys=" . $count ."&delimiter=" .$delimiter;
     parse_str($query,$arr);
     $path = "?" . http_build_query($arr);
@@ -352,8 +340,7 @@ function UCloud_ListObjects($bucket, $path_prefix, $marker, $count, $delimiter)
 // @results: $url
 function UCloud_MakePublicUrl($bucket, $key)
 {
-    global $UCLOUD_PROXY_SUFFIX;
-    return $bucket . $UCLOUD_PROXY_SUFFIX . "/" . rawurlencode($key);
+    return UCloud_GetHost($bucket) . "/" . rawurlencode($key);
 }
 //------------------------------生成私有文件Url------------------------------
 // @results: $url

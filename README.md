@@ -14,6 +14,10 @@ ucloud/conf.php 为配置文件，按需填写：
 -    $UCLOUD_PRIVATE_KEY = 'paste your private key here';
 
 
+若需使用自定义域名，可额外设置：
+
+-    $UCLOUD_CUSTOM_DOMAIN = 'your-custom-domain.com'; // 可选，置空则继续使用 bucket + suffix
+
 Demo 目录中，包含各个接口的使用例子：
 -    append.php
 -    delete.php
