@@ -112,11 +112,26 @@ function GetFileMimeType($filename)
     return array($mimetype, null);
 }
 
+function UCloud_GetHost($bucket) {
+    global $UCLOUD_CUSTOM_DOMAIN;
+    global $UCLOUD_PROXY_SUFFIX;
+
+    $customDomain = trim($UCLOUD_CUSTOM_DOMAIN);
+    if ($customDomain !== '') {
+        return $customDomain;
+    }
+
+    return $bucket . $UCLOUD_PROXY_SUFFIX;
+}
+
 function CheckConfig($action) {
 
     global $UCLOUD_PUBLIC_KEY;
     global $UCLOUD_PRIVATE_KEY;
     global $UCLOUD_PROXY_SUFFIX;
+    global $UCLOUD_CUSTOM_DOMAIN;
+
+    $customDomain = trim($UCLOUD_CUSTOM_DOMAIN);
 
     switch ($action) {
         case ActionType::PUTFILE:
@@ -129,17 +144,17 @@ function CheckConfig($action) {
         case ActionType::UPLOADHIT:
         case ActionType::LISTOBJECTS:
         case ActionType::HEAD:
-            if ($UCLOUD_PROXY_SUFFIX == "") {
-                    return new UCloud_Error(400, -1, "no proxy suffix found in config");
+            if ($customDomain === '' && $UCLOUD_PROXY_SUFFIX == "") {
+                return new UCloud_Error(400, -1, "no proxy suffix or custom domain found in config");
             } else if ($UCLOUD_PUBLIC_KEY == "" || strstr($UCLOUD_PUBLIC_KEY, " ") != FALSE) {
-                    return new UCloud_Error(400, -1, "invalid public key found in config");
+                return new UCloud_Error(400, -1, "invalid public key found in config");
             } else if ($UCLOUD_PRIVATE_KEY == "" || strstr($UCLOUD_PRIVATE_KEY, " ") != FALSE) {
-                    return new UCloud_Error(400, -1, "invalid private key found in config");
+                return new UCloud_Error(400, -1, "invalid private key found in config");
             }
             break;
         case ActionType::GETFILE:
-            if ($UCLOUD_PROXY_SUFFIX == "") {
-                    return new UCloud_Error(400, -1, "no proxy suffix found in config");
+            if ($customDomain === '' && $UCLOUD_PROXY_SUFFIX == "") {
+                return new UCloud_Error(400, -1, "no proxy suffix or custom domain found in config");
             }
             break;
         default:
